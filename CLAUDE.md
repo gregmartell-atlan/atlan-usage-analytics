@@ -6,8 +6,8 @@
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `DATABASE` | `LANDING` | Snowflake database name |
-| `SCHEMA` | `FRONTEND_PROD` | Schema containing PAGES, TRACKS, USERS tables |
+| `DATABASE` | `YOUR_DATABASE` | Snowflake database name — run `/setup` to configure |
+| `SCHEMA` | `YOUR_SCHEMA` | Schema containing PAGES, TRACKS, USERS tables — run `/setup` to configure |
 | `SNOWFLAKE_MCP_TOOL` | `mcp__snowflake__run_snowflake_query` | MCP tool name for query execution |
 
 **Substitution rule**: All SQL files use `{{DATABASE}}.{{SCHEMA}}.TABLE` placeholders. Before executing any query, replace `{{DATABASE}}` and `{{SCHEMA}}` with the values above.
@@ -77,7 +77,6 @@ LEFT JOIN (
 ### Noise Event Exclusions
 Always filter these from TRACKS.event_text:
 ```
-workflows_run_ended, workflow_run_finished, workflow_step_finished,
 atlan_analaytics_aggregateinfo_fetch,
 api_error_emit, api_evaluator_cancelled, api_evaluator_succeeded,
 Experiment Started, $experiment_started,
@@ -86,6 +85,13 @@ web_vital_metric_fcp_track, web_vital_metric_lcp_track,
 performance_metric_user_timing_discovery_search,
 performance_metric_user_timing_app_bootstrap
 ```
+
+### Workflow/Automation Exclusions
+Excluded by default — system-generated workflow events are massive volume (100K+/month) from a single service user.
+
+**TRACKS**: `AND event_text NOT LIKE 'workflow_%'` (covers all system workflow events)
+
+Users can opt in to include workflow/automation activity via the "Include workflows?" parameter in any skill.
 
 ### Session Derivation
 No session IDs are populated. Derive sessions from 30-minute inactivity gaps:

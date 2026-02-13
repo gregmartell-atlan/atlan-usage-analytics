@@ -33,19 +33,24 @@ Parse any arguments provided. Ask conversationally for what's missing:
 
 4. **Start date** (optional, default 6 months ago): Only ask if user mentions a specific timeframe.
 
+5. **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+   - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+   - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+   - Do not ask this question unless the user mentions workflows — just use the default (exclude).
+
 ## SQL File Mapping
 
 | Analysis | SQL File Path | Parameters |
 |----------|--------------|------------|
-| cohort | `sql/04_retention/monthly_retention_cohort.sql` | START_DATE, DOMAIN |
-| daily (pageview) | `sql/04_retention/daily_retention_session_to_pageview.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
-| daily (search) | `sql/04_retention/daily_retention_session_to_search.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
-| daily (session) | `sql/04_retention/daily_retention_session_to_session.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
-| churn | `sql/04_retention/churned_users.sql` | DOMAIN |
-| reactivated | `sql/04_retention/reactivated_users.sql` | START_DATE, DOMAIN |
-| activation | `sql/04_retention/activation_funnel.sql` | START_DATE, DOMAIN |
-| funnel | `sql/04_retention/funnel_session_to_pageview.sql` | START_DATE, END_DATE, DOMAIN |
-| rate | `sql/04_retention/retention_rate_aggregate.sql` | START_DATE, DOMAIN |
+| cohort | `~/atlan-usage-analytics/sql/04_retention/monthly_retention_cohort.sql` | START_DATE, DOMAIN |
+| daily (pageview) | `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_pageview.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
+| daily (search) | `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_search.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
+| daily (session) | `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_session.sql` | START_DATE, DOMAIN, RETENTION_DAYS |
+| churn | `~/atlan-usage-analytics/sql/04_retention/churned_users.sql` | DOMAIN |
+| reactivated | `~/atlan-usage-analytics/sql/04_retention/reactivated_users.sql` | START_DATE, DOMAIN |
+| activation | `~/atlan-usage-analytics/sql/04_retention/activation_funnel.sql` | START_DATE, DOMAIN |
+| funnel | `~/atlan-usage-analytics/sql/04_retention/funnel_session_to_pageview.sql` | START_DATE, END_DATE, DOMAIN |
+| rate | `~/atlan-usage-analytics/sql/04_retention/retention_rate_aggregate.sql` | START_DATE, DOMAIN |
 
 ## Parameter Substitution
 
@@ -57,9 +62,8 @@ Parse any arguments provided. Ask conversationally for what's missing:
 ## Execution
 
 1. Read the SQL file from the path above
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-3. Replace all other `{{PARAMETER}}` placeholders with collected values
-4. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+2. Replace all `{{PARAMETER}}` placeholders with collected values
+3. Execute via `mcp__snowflake__run_snowflake_query`
 4. For "overview" mode, execute cohort + churn + reactivated sequentially
 
 ## Presentation Guidelines

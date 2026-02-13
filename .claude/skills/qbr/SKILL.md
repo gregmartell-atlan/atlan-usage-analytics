@@ -18,6 +18,12 @@ Parse $ARGUMENTS to determine mode:
   - **Compare customers** - Side-by-side metrics for all domains
   - **Risk alerts** - Flag customers with declining metrics
 
+**All modes** — optional parameter:
+- **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+  - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+  - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+  - Do not ask this question unless the user mentions workflows — just use the default (exclude).
+
 ## QBR Mode
 
 ### Parameters:
@@ -25,10 +31,9 @@ Parse $ARGUMENTS to determine mode:
 2. **Months back** (optional, default 6): "How many months of data? (default: 6)"
 
 ### Execution:
-1. Read `sql/06_cs_review/qbr_deck_data.sql`
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-2b. Replace `{{DOMAIN}}` with `'domain.atlan.com'` and `{{MONTHS_BACK}}` with bare integer (e.g., `6`)
-3. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+1. Read `~/atlan-usage-analytics/sql/06_cs_review/qbr_deck_data.sql`
+2. Replace `{{DOMAIN}}` with `'domain.atlan.com'` and `{{MONTHS_BACK}}` with bare integer (e.g., `6`)
+3. Execute via `mcp__snowflake__run_snowflake_query`
 
 ### Presentation:
 The query returns rows with a `section` column. Parse and present as a structured QBR briefing:
@@ -60,10 +65,9 @@ The query returns rows with a `section` column. Parse and present as a structure
 1. **Start date** (optional, default 6 months ago)
 
 ### Execution:
-1. Read `sql/06_cs_review/multi_customer_comparison.sql`
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-2b. Replace `{{START_DATE}}` with `'YYYY-MM-DD'`
-3. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+1. Read `~/atlan-usage-analytics/sql/06_cs_review/multi_customer_comparison.sql`
+2. Replace `{{START_DATE}}` with `'YYYY-MM-DD'`
+3. Execute via `mcp__snowflake__run_snowflake_query`
 
 ### Presentation:
 Ranked table of all domains by current MAU. Highlight:
@@ -77,10 +81,9 @@ Ranked table of all domains by current MAU. Highlight:
 1. **Start date** (optional, default 6 months ago)
 
 ### Execution:
-1. Read `sql/06_cs_review/trending_alert.sql`
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-2b. Replace `{{START_DATE}}` with `'YYYY-MM-DD'`
-3. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+1. Read `~/atlan-usage-analytics/sql/06_cs_review/trending_alert.sql`
+2. Replace `{{START_DATE}}` with `'YYYY-MM-DD'`
+3. Execute via `mcp__snowflake__run_snowflake_query`
 
 ### Presentation:
 Group alerts by severity:

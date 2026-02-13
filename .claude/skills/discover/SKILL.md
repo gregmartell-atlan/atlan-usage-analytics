@@ -17,83 +17,29 @@ Parse $ARGUMENTS to determine what to discover:
 - A search term (anything else) → Search events and pages matching that term
 - No arguments → Ask what they want to explore
 
-## Discovery Queries
+## SQL File Mapping
 
-### Events (TRACKS table)
-Run this query to show the event catalog:
+| Discovery Mode | SQL File Path | Parameters |
+|---------------|--------------|------------|
+| events | `~/atlan-usage-analytics/sql/00_schema_profile/discover_events.sql` | DATABASE, SCHEMA |
+| pages | `~/atlan-usage-analytics/sql/00_schema_profile/discover_pages.sql` | DATABASE, SCHEMA |
+| domains | `~/atlan-usage-analytics/sql/00_schema_profile/discover_domains.sql` | DATABASE, SCHEMA |
 
-```sql
-WITH user_domains AS (
-    SELECT user_id, MAX(domain) AS domain
-    FROM {{DATABASE}}.{{SCHEMA}}.PAGES
-    WHERE domain IS NOT NULL
-    GROUP BY user_id
-)
-SELECT
-    t.event_text,
-    COUNT(*) AS total_occurrences,
-    COUNT(DISTINCT t.user_id) AS unique_users,
-    COUNT(DISTINCT ud.domain) AS domains_using,
-    MIN(DATE(t.TIMESTAMP)) AS first_seen,
-    MAX(DATE(t.TIMESTAMP)) AS last_seen
-FROM {{DATABASE}}.{{SCHEMA}}.TRACKS t
-INNER JOIN user_domains ud ON ud.user_id = t.user_id
-WHERE t.event_text NOT IN (
-    'workflows_run_ended', 'atlan_analaytics_aggregateinfo_fetch',
-    'workflow_run_finished', 'workflow_step_finished', 'api_error_emit',
-    'api_evaluator_cancelled', 'api_evaluator_succeeded', 'Experiment Started',
-    '$experiment_started', 'web_vital_metric_inp_track', 'web_vital_metric_ttfb_track',
-    'performance_metric_user_timing_discovery_search',
-    'performance_metric_user_timing_app_bootstrap',
-    'web_vital_metric_fcp_track', 'web_vital_metric_lcp_track'
-)
-AND t.TIMESTAMP >= DATEADD('month', -3, CURRENT_TIMESTAMP())
-GROUP BY t.event_text
-ORDER BY total_occurrences DESC
-```
+## Optional Parameters
 
-If the user provided a **search term**, add this filter:
-```sql
-AND LOWER(t.event_text) LIKE '%<search_term>%'
-```
+- **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+  - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+  - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+  - Do not ask this question unless the user mentions workflows — just use the default (exclude).
 
-If the user specified a **domain**, add:
-```sql
-AND ud.domain = '<domain>'
-```
+## Conditional Filters
 
-### Pages (PAGES table)
-```sql
-SELECT
-    p.name AS page_name,
-    COUNT(*) AS total_views,
-    COUNT(DISTINCT p.user_id) AS unique_users,
-    COUNT(DISTINCT p.domain) AS domains_using,
-    MIN(DATE(p.TIMESTAMP)) AS first_seen,
-    MAX(DATE(p.TIMESTAMP)) AS last_seen
-FROM {{DATABASE}}.{{SCHEMA}}.PAGES p
-WHERE p.name IS NOT NULL
-  AND p.TIMESTAMP >= DATEADD('month', -3, CURRENT_TIMESTAMP())
-GROUP BY p.name
-ORDER BY total_views DESC
-```
+After reading the SQL file, add these filters before the `GROUP BY` clause when applicable:
 
-### Domains
-```sql
-SELECT
-    p.domain,
-    COUNT(DISTINCT p.user_id) AS total_users,
-    COUNT(*) AS total_pageviews,
-    MIN(DATE(p.TIMESTAMP)) AS first_activity,
-    MAX(DATE(p.TIMESTAMP)) AS last_activity
-FROM {{DATABASE}}.{{SCHEMA}}.PAGES p
-WHERE p.domain IS NOT NULL
-  AND p.TIMESTAMP >= DATEADD('month', -3, CURRENT_TIMESTAMP())
-GROUP BY p.domain
-ORDER BY total_users DESC
-```
+- **Search term** (when the user provides a search term for events): add `AND LOWER(t.event_text) LIKE '%<search_term>%'`
+- **Domain filter** (when the user specifies a customer domain for events): add `AND ud.domain = '<domain>'`
 
-### Features (reference mapping, no query needed)
+## Features (reference mapping, no query needed)
 Show this mapping directly:
 
 | Feature Area | Page Names | Event Prefixes | Key Events |
@@ -111,9 +57,11 @@ Show this mapping directly:
 
 ## Execution
 
-1. Replace `{{DATABASE}}` and `{{SCHEMA}}` in the inline SQL with values from CLAUDE.md Configuration
-2. Construct the appropriate query based on the mode
-3. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+1. Read the SQL file from the path above
+2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from the project configuration
+3. Apply any conditional filters (search term, domain) before the `GROUP BY` clause
+4. Execute via `mcp__snowflake__run_snowflake_query`
+5. For search term mode, execute both the events and pages queries with the search filter applied
 
 ## Presentation
 

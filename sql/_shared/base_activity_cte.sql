@@ -30,10 +30,7 @@ activity_events AS (
     FROM {{DATABASE}}.{{SCHEMA}}.TRACKS t
     LEFT JOIN user_domains ud ON ud.user_id = t.user_id
     WHERE t.event_text NOT IN (
-        'workflows_run_ended',
         'atlan_analaytics_aggregateinfo_fetch',
-        'workflow_run_finished',
-        'workflow_step_finished',
         'api_error_emit',
         'api_evaluator_cancelled',
         'api_evaluator_succeeded',
@@ -46,6 +43,7 @@ activity_events AS (
         'web_vital_metric_fcp_track',
         'web_vital_metric_lcp_track'
     )
+    AND t.event_text NOT LIKE 'workflow_%'
     AND t.TIMESTAMP >= {{START_DATE}}
 
     UNION ALL

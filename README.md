@@ -13,7 +13,7 @@ SQL query library and Claude Code skills for Customer Success usage analytics. W
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/<org>/atlan-usage-analytics.git
+git clone https://github.com/gregmartell-atlan/atlan-usage-analytics.git
 cd atlan-usage-analytics
 ```
 
@@ -48,6 +48,8 @@ Edit `CLAUDE.md` and update the **Configuration** table at the top:
 | `SCHEMA` | Your schema containing PAGES, TRACKS, USERS (e.g., `usage_analytics`) |
 | `SNOWFLAKE_MCP_TOOL` | Your MCP tool name (default: `mcp__snowflake__run_snowflake_query`) |
 
+Or simply run `/setup` in Claude Code and it will walk you through it.
+
 ### 4. Verify data access
 
 Open Claude Code in this directory and run:
@@ -62,6 +64,7 @@ This executes `table_profiler.sql` to verify connectivity and data shape.
 
 | Skill | Description | Example |
 |-------|-------------|---------|
+| `/setup` | Configure Snowflake connection — run this first | `/setup` |
 | `/analyze` | General analytics — finds the right query or writes custom SQL | `/analyze MAU for acme.atlan.com` |
 | `/discover` | Browse available events, pages, domains | `/discover events` |
 | `/users` | Active users — MAU/DAU/WAU, stickiness, power users | `/users trends acme.atlan.com` |
@@ -81,12 +84,17 @@ This executes `table_profiler.sql` to verify connectivity and data shape.
 
 **Key**: `PAGES.domain` is the primary domain source. `user_id` is the primary identity key. USERS provides optional email/role enrichment via LEFT JOIN.
 
+> **Note**: System-generated workflow events (100K+/month) are excluded by default. Use the "Include workflows?" option in any skill to include them.
+
 ## Query Categories
 
 ### 00 - Schema Profile
 | Query | Description |
 |-------|-------------|
 | `table_profiler` | Data availability check: row counts, column fill rates, user overlap |
+| `discover_events` | Event catalog — all tracked events with usage stats |
+| `discover_pages` | Page catalog — all page names with view counts |
+| `discover_domains` | Domain catalog — all customer domains with activity levels |
 
 ### 01 - Active Users
 | Query | Description |
@@ -104,6 +112,7 @@ This executes `table_profiler.sql` to verify connectivity and data shape.
 | `top_events_by_domain` | Most frequent tracked events per domain |
 | `feature_adoption_matrix` | Feature-by-user boolean matrix per month |
 | `feature_trend_weekly` | Week-over-week feature usage trends |
+| `feature_engagement_quadrant` | Feature reach vs depth analysis (engagement matrix) |
 | `connector_usage` | Data source/connector interaction patterns |
 
 ### 03 - Engagement Depth

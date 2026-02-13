@@ -24,26 +24,30 @@ Parse $ARGUMENTS for domain and analysis type. Ask for what's missing:
 
 3. **Start date** (optional, default 3 months ago)
 
+4. **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+   - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+   - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+   - Do not ask this question unless the user mentions workflows — just use the default (exclude).
+
 ## SQL File Mapping
 
 | Analysis | SQL File Path | Parameters |
 |----------|--------------|------------|
-| top-pages | `sql/02_feature_adoption/top_pages_by_domain.sql` | START_DATE, DOMAIN |
-| top-events | `sql/02_feature_adoption/top_events_by_domain.sql` | START_DATE, DOMAIN |
-| matrix | `sql/02_feature_adoption/feature_adoption_matrix.sql` | START_DATE, DOMAIN |
-| trends | `sql/02_feature_adoption/feature_trend_weekly.sql` | START_DATE, DOMAIN |
-| connectors | `sql/02_feature_adoption/connector_usage.sql` | START_DATE, DOMAIN |
-| quadrant | Custom SQL (inline below) | START_DATE, DOMAIN |
+| top-pages | `~/atlan-usage-analytics/sql/02_feature_adoption/top_pages_by_domain.sql` | START_DATE, DOMAIN |
+| top-events | `~/atlan-usage-analytics/sql/02_feature_adoption/top_events_by_domain.sql` | START_DATE, DOMAIN |
+| matrix | `~/atlan-usage-analytics/sql/02_feature_adoption/feature_adoption_matrix.sql` | START_DATE, DOMAIN |
+| trends | `~/atlan-usage-analytics/sql/02_feature_adoption/feature_trend_weekly.sql` | START_DATE, DOMAIN |
+| connectors | `~/atlan-usage-analytics/sql/02_feature_adoption/connector_usage.sql` | START_DATE, DOMAIN |
+| quadrant | `~/atlan-usage-analytics/sql/02_feature_adoption/feature_engagement_quadrant.sql` | START_DATE, DOMAIN |
 
 ## Parameter Substitution
 - `{{DOMAIN}}` → `'acme.atlan.com'` (single-quoted)
 - `{{START_DATE}}` → `'2025-11-13'` (single-quoted date)
 
 ## Execution
-1. Read the SQL file from the path above (or use inline SQL for quadrant)
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-3. Replace `{{START_DATE}}` and `{{DOMAIN}}` with collected values
-4. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+1. Read the SQL file from the path above
+2. Replace `{{START_DATE}}` and `{{DOMAIN}}` with collected values
+3. Execute via `mcp__snowflake__run_snowflake_query`
 
 ## Presentation
 
@@ -78,80 +82,6 @@ Table by connector_name and asset_type. Reveals the customer's tech stack (Snowf
 
 ### quadrant
 Feature engagement quadrant — plots each feature by **reach** (unique users, x-axis) vs **depth** (avg events per user, y-axis). Inspired by Heap's engagement matrix.
-
-**Inline SQL** (replace `{{START_DATE}}` and `{{DOMAIN}}`):
-```sql
-WITH user_domains AS (
-    SELECT user_id, MAX(domain) AS domain
-    FROM {{DATABASE}}.{{SCHEMA}}.PAGES
-    WHERE domain IS NOT NULL
-    GROUP BY user_id
-),
-
-page_events AS (
-    SELECT p.user_id, CASE
-            WHEN p.name = 'discovery' THEN 'Discovery/Search'
-            WHEN p.name = 'reverse-metadata-sidebar' THEN 'Chrome Extension'
-            WHEN p.name IN ('saved_query', 'insights') THEN 'Insights/SQL'
-            WHEN p.name IN ('glossary', 'term', 'category', 'classifications', 'custom_metadata') THEN 'Governance'
-            WHEN p.name IN ('asset_profile', 'overview') THEN 'Asset Profile'
-            WHEN p.name = 'monitor' THEN 'Data Quality'
-            WHEN p.name IN ('workflows-home', 'workflows-profile', 'runs', 'playbook') THEN 'Workflows'
-            WHEN p.name = 'home' THEN 'Home'
-            ELSE NULL END AS feature
-    FROM {{DATABASE}}.{{SCHEMA}}.PAGES p
-    WHERE p.domain = {{DOMAIN}}
-      AND p.TIMESTAMP >= {{START_DATE}}
-      AND p.name IS NOT NULL
-),
-
-track_events AS (
-    SELECT t.user_id, CASE
-            WHEN t.event_text LIKE 'discovery_search%' THEN 'Discovery/Search'
-            WHEN t.event_text LIKE 'chrome_%' THEN 'Chrome Extension'
-            WHEN t.event_text LIKE 'insights_%' THEN 'Insights/SQL'
-            WHEN t.event_text LIKE 'governance_%' OR t.event_text LIKE 'gtc_tree_%' THEN 'Governance'
-            WHEN t.event_text LIKE 'atlan_ai_%' THEN 'AI Copilot'
-            WHEN t.event_text LIKE 'lineage_%' THEN 'Lineage'
-            WHEN t.event_text LIKE 'discovery_metadata_%' THEN 'Metadata Curation'
-            WHEN t.event_text = 'main_navigation_button_clicked' THEN 'Navigation'
-            ELSE NULL END AS feature
-    FROM {{DATABASE}}.{{SCHEMA}}.TRACKS t
-    INNER JOIN user_domains ud ON ud.user_id = t.user_id AND ud.domain = {{DOMAIN}}
-    WHERE t.TIMESTAMP >= {{START_DATE}}
-      AND t.event_text NOT IN (
-          'workflows_run_ended', 'atlan_analaytics_aggregateinfo_fetch',
-          'workflow_run_finished', 'workflow_step_finished', 'api_error_emit',
-          'api_evaluator_cancelled', 'api_evaluator_succeeded', 'Experiment Started',
-          '$experiment_started', 'web_vital_metric_inp_track', 'web_vital_metric_ttfb_track',
-          'performance_metric_user_timing_discovery_search',
-          'performance_metric_user_timing_app_bootstrap',
-          'web_vital_metric_fcp_track', 'web_vital_metric_lcp_track'
-      )
-),
-
-combined AS (
-    SELECT user_id, feature FROM page_events WHERE feature IS NOT NULL
-    UNION ALL
-    SELECT user_id, feature FROM track_events WHERE feature IS NOT NULL
-),
-
-per_user AS (
-    SELECT feature, user_id, COUNT(*) AS events
-    FROM combined
-    GROUP BY feature, user_id
-)
-
-SELECT
-    feature,
-    COUNT(DISTINCT user_id) AS unique_users,
-    SUM(events) AS total_events,
-    ROUND(AVG(events), 1) AS avg_events_per_user,
-    ROUND(MEDIAN(events), 1) AS median_events_per_user
-FROM per_user
-GROUP BY feature
-ORDER BY unique_users DESC
-```
 
 **Presentation**: Draw an ASCII scatter plot with features positioned by reach vs depth. Divide into 4 quadrants using median unique_users (x) and median avg_events_per_user (y) as dividers:
 - **Top-right** (More users, higher usage): Core power features — high reach AND depth

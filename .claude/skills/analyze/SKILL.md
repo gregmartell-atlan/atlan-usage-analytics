@@ -22,52 +22,52 @@ Match the question to the best SQL file from the library below. If no file match
 ### Available SQL Files
 
 **Schema Profile** (no params):
-- `sql/00_schema_profile/table_profiler.sql` - Data availability, row counts, column fill rates
+- `~/atlan-usage-analytics/sql/00_schema_profile/table_profiler.sql` - Data availability, row counts, column fill rates
 
 **Active Users** (params: START_DATE, DOMAIN):
-- `sql/01_active_users/mau_by_domain.sql` - Monthly active users with MoM delta
-- `sql/01_active_users/dau_by_domain.sql` - Daily active users
-- `sql/01_active_users/wau_by_domain.sql` - Weekly active users
-- `sql/01_active_users/mau_dau_ratio.sql` - DAU/MAU stickiness ratio
-- `sql/01_active_users/user_roster_by_domain.sql` - Full user list with status
+- `~/atlan-usage-analytics/sql/01_active_users/mau_by_domain.sql` - Monthly active users with MoM delta
+- `~/atlan-usage-analytics/sql/01_active_users/dau_by_domain.sql` - Daily active users
+- `~/atlan-usage-analytics/sql/01_active_users/wau_by_domain.sql` - Weekly active users
+- `~/atlan-usage-analytics/sql/01_active_users/mau_dau_ratio.sql` - DAU/MAU stickiness ratio
+- `~/atlan-usage-analytics/sql/01_active_users/user_roster_by_domain.sql` - Full user list with status
 
 **Feature Adoption** (params: START_DATE, DOMAIN):
-- `sql/02_feature_adoption/top_pages_by_domain.sql` - Most visited pages
-- `sql/02_feature_adoption/top_events_by_domain.sql` - Most frequent events
-- `sql/02_feature_adoption/feature_adoption_matrix.sql` - Feature-by-user boolean matrix per month
-- `sql/02_feature_adoption/feature_trend_weekly.sql` - Weekly feature trends
-- `sql/02_feature_adoption/connector_usage.sql` - Connector/data source interactions
+- `~/atlan-usage-analytics/sql/02_feature_adoption/top_pages_by_domain.sql` - Most visited pages
+- `~/atlan-usage-analytics/sql/02_feature_adoption/top_events_by_domain.sql` - Most frequent events
+- `~/atlan-usage-analytics/sql/02_feature_adoption/feature_adoption_matrix.sql` - Feature-by-user boolean matrix per month
+- `~/atlan-usage-analytics/sql/02_feature_adoption/feature_trend_weekly.sql` - Weekly feature trends
+- `~/atlan-usage-analytics/sql/02_feature_adoption/connector_usage.sql` - Connector/data source interactions
 
 **Engagement** (params: START_DATE, DOMAIN):
-- `sql/03_engagement_depth/session_duration.sql` - Session length monthly
-- `sql/03_engagement_depth/session_duration_daily.sql` - Session length daily
-- `sql/03_engagement_depth/power_users.sql` - Top users by composite score
-- `sql/03_engagement_depth/actions_per_session.sql` - Events per session
-- `sql/03_engagement_depth/engagement_tiers.sql` - Power/Heavy/Light/Dormant segmentation
-- `sql/03_engagement_depth/daily_engagement_matrix.sql` - Daily engagement distribution
-- `sql/03_engagement_depth/avg_pageviews_per_user_daily.sql` - Avg pageviews per user per day
+- `~/atlan-usage-analytics/sql/03_engagement_depth/session_duration.sql` - Session length monthly
+- `~/atlan-usage-analytics/sql/03_engagement_depth/session_duration_daily.sql` - Session length daily
+- `~/atlan-usage-analytics/sql/03_engagement_depth/power_users.sql` - Top users by composite score
+- `~/atlan-usage-analytics/sql/03_engagement_depth/actions_per_session.sql` - Events per session
+- `~/atlan-usage-analytics/sql/03_engagement_depth/engagement_tiers.sql` - Power/Heavy/Light/Dormant segmentation
+- `~/atlan-usage-analytics/sql/03_engagement_depth/daily_engagement_matrix.sql` - Daily engagement distribution
+- `~/atlan-usage-analytics/sql/03_engagement_depth/avg_pageviews_per_user_daily.sql` - Avg pageviews per user per day
 
 **Retention** (params vary):
-- `sql/04_retention/monthly_retention_cohort.sql` - Cohort retention matrix (START_DATE, DOMAIN)
-- `sql/04_retention/activation_funnel.sql` - New user activation rates (START_DATE, DOMAIN)
-- `sql/04_retention/churned_users.sql` - Churned users list (DOMAIN only)
-- `sql/04_retention/reactivated_users.sql` - Reactivated users (START_DATE, DOMAIN)
-- `sql/04_retention/daily_retention_session_to_pageview.sql` - Day-N retention: pageview (START_DATE, DOMAIN, RETENTION_DAYS)
-- `sql/04_retention/daily_retention_session_to_search.sql` - Day-N retention: search/AI (START_DATE, DOMAIN, RETENTION_DAYS)
-- `sql/04_retention/daily_retention_session_to_session.sql` - Day-N retention: return visit (START_DATE, DOMAIN, RETENTION_DAYS)
-- `sql/04_retention/retention_rate_aggregate.sql` - Aggregate 7-day retention per week (START_DATE, DOMAIN)
-- `sql/04_retention/funnel_session_to_pageview.sql` - Multi-step funnel (START_DATE, END_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/04_retention/monthly_retention_cohort.sql` - Cohort retention matrix (START_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/04_retention/activation_funnel.sql` - New user activation rates (START_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/04_retention/churned_users.sql` - Churned users list (DOMAIN only)
+- `~/atlan-usage-analytics/sql/04_retention/reactivated_users.sql` - Reactivated users (START_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_pageview.sql` - Day-N retention: pageview (START_DATE, DOMAIN, RETENTION_DAYS)
+- `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_search.sql` - Day-N retention: search/AI (START_DATE, DOMAIN, RETENTION_DAYS)
+- `~/atlan-usage-analytics/sql/04_retention/daily_retention_session_to_session.sql` - Day-N retention: return visit (START_DATE, DOMAIN, RETENTION_DAYS)
+- `~/atlan-usage-analytics/sql/04_retention/retention_rate_aggregate.sql` - Aggregate 7-day retention per week (START_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/04_retention/funnel_session_to_pageview.sql` - Multi-step funnel (START_DATE, END_DATE, DOMAIN)
 
 **Customer Health** (params vary):
-- `sql/05_customer_health/customer_health_scorecard.sql` - Composite 0-100 health score, all domains (START_DATE)
-- `sql/05_customer_health/domain_summary_snapshot.sql` - One-row summary per domain (START_DATE)
-- `sql/05_customer_health/license_utilization.sql` - Active vs total by role (START_DATE, DOMAIN)
-- `sql/05_customer_health/role_distribution.sql` - Role breakdown (DOMAIN)
+- `~/atlan-usage-analytics/sql/05_customer_health/customer_health_scorecard.sql` - Composite 0-100 health score, all domains (START_DATE)
+- `~/atlan-usage-analytics/sql/05_customer_health/domain_summary_snapshot.sql` - One-row summary per domain (START_DATE)
+- `~/atlan-usage-analytics/sql/05_customer_health/license_utilization.sql` - Active vs total by role (START_DATE, DOMAIN)
+- `~/atlan-usage-analytics/sql/05_customer_health/role_distribution.sql` - Role breakdown (DOMAIN)
 
 **CS Review** (params vary):
-- `sql/06_cs_review/qbr_deck_data.sql` - QBR data pack (DOMAIN, MONTHS_BACK)
-- `sql/06_cs_review/multi_customer_comparison.sql` - Multi-domain comparison (START_DATE)
-- `sql/06_cs_review/trending_alert.sql` - Risk alerts all domains (START_DATE)
+- `~/atlan-usage-analytics/sql/06_cs_review/qbr_deck_data.sql` - QBR data pack (DOMAIN, MONTHS_BACK)
+- `~/atlan-usage-analytics/sql/06_cs_review/multi_customer_comparison.sql` - Multi-domain comparison (START_DATE)
+- `~/atlan-usage-analytics/sql/06_cs_review/trending_alert.sql` - Risk alerts all domains (START_DATE)
 
 ## Step 3: Collect Parameters
 
@@ -78,6 +78,11 @@ Ask conversationally for any missing parameters. Use smart defaults:
 - No timeframe mentioned → default START_DATE to 6 months ago
 - RETENTION_DAYS → default 14
 - MONTHS_BACK → default 6
+
+- **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+  - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+  - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+  - Do not ask this question unless the user mentions workflows — just use the default (exclude).
 
 ### Parameter formatting:
 - `{{DOMAIN}}` → single-quoted string: `'acme.atlan.com'`
@@ -120,7 +125,7 @@ WITH user_domains AS (
 
 **Timezone**: `CONVERT_TIMEZONE('UTC', 'Asia/Kolkata', TIMESTAMP)` for display dates.
 
-**Sessions**: Derive from 30-min inactivity gaps using LAG() + DATEDIFF > 1800 seconds. See `sql/_shared/derived_sessions_cte.sql` for the pattern.
+**Sessions**: Derive from 30-min inactivity gaps using LAG() + DATEDIFF > 1800 seconds. See `~/atlan-usage-analytics/sql/_shared/derived_sessions_cte.sql` for the pattern.
 
 **Key events**:
 - Search: `event_text = 'discovery_search_results'`
@@ -132,9 +137,8 @@ WITH user_domains AS (
 ## Step 5: Execute
 
 1. Read the SQL file using the Read tool
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-3. Replace all other `{{PARAMETER}}` placeholders with collected values
-4. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+2. Replace all `{{PARAMETER}}` placeholders with collected values
+3. Execute via `mcp__snowflake__run_snowflake_query`
 
 ## Step 6: Present Results
 

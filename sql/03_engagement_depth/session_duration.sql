@@ -35,15 +35,15 @@ raw_events AS (
         WHERE t.TIMESTAMP >= {{START_DATE}}
           AND ud.domain = {{DOMAIN}}
           AND t.event_text NOT IN (
-              'workflows_run_ended', 'atlan_analaytics_aggregateinfo_fetch',
-              'workflow_run_finished', 'workflow_step_finished', 'api_error_emit',
-              'api_evaluator_cancelled', 'api_evaluator_succeeded', 'Experiment Started',
-              '$experiment_started',
+              'atlan_analaytics_aggregateinfo_fetch',
+              'api_error_emit', 'api_evaluator_cancelled', 'api_evaluator_succeeded',
+              'Experiment Started', '$experiment_started',
               'web_vital_metric_inp_track', 'web_vital_metric_ttfb_track',
               'performance_metric_user_timing_discovery_search',
               'performance_metric_user_timing_app_bootstrap',
               'web_vital_metric_fcp_track', 'web_vital_metric_lcp_track'
           )
+          AND t.event_text NOT LIKE 'workflow_%'
     ) AS combined
 ),
 

@@ -21,15 +21,20 @@ Parse $ARGUMENTS for a domain. Ask for what's missing:
 
 3. **Start date** (optional, default 3 months ago)
 
+4. **Include workflows?** (optional, default: no): "Include workflow/automation events? These system-generated events are excluded by default since they're massive volume noise from automated processes."
+   - If **yes**: Before executing, remove the `AND ... NOT LIKE 'workflow_%'` filter from TRACKS queries in the SQL.
+   - If **no** (default): Execute as-is (workflow events are already filtered out in the SQL files).
+   - Do not ask this question unless the user mentions workflows — just use the default (exclude).
+
 ## SQL File Mapping
 
 | Focus | SQL File Path | Parameters |
 |-------|--------------|------------|
-| sessions (monthly) | `sql/03_engagement_depth/session_duration.sql` | START_DATE, DOMAIN |
-| sessions (daily) | `sql/03_engagement_depth/session_duration_daily.sql` | START_DATE, DOMAIN |
-| actions | `sql/03_engagement_depth/actions_per_session.sql` | START_DATE, DOMAIN |
-| daily matrix | `sql/03_engagement_depth/daily_engagement_matrix.sql` | START_DATE, DOMAIN |
-| daily pageviews | `sql/03_engagement_depth/avg_pageviews_per_user_daily.sql` | START_DATE, DOMAIN |
+| sessions (monthly) | `~/atlan-usage-analytics/sql/03_engagement_depth/session_duration.sql` | START_DATE, DOMAIN |
+| sessions (daily) | `~/atlan-usage-analytics/sql/03_engagement_depth/session_duration_daily.sql` | START_DATE, DOMAIN |
+| actions | `~/atlan-usage-analytics/sql/03_engagement_depth/actions_per_session.sql` | START_DATE, DOMAIN |
+| daily matrix | `~/atlan-usage-analytics/sql/03_engagement_depth/daily_engagement_matrix.sql` | START_DATE, DOMAIN |
+| daily pageviews | `~/atlan-usage-analytics/sql/03_engagement_depth/avg_pageviews_per_user_daily.sql` | START_DATE, DOMAIN |
 
 ## Parameter Substitution
 - `{{DOMAIN}}` → `'acme.atlan.com'` (single-quoted)
@@ -37,9 +42,8 @@ Parse $ARGUMENTS for a domain. Ask for what's missing:
 
 ## Execution
 1. Read the SQL file(s) from the paths above
-2. Replace `{{DATABASE}}` and `{{SCHEMA}}` with values from CLAUDE.md Configuration
-3. Replace `{{START_DATE}}` and `{{DOMAIN}}` with collected values
-4. Execute via the Snowflake MCP tool (see `SNOWFLAKE_MCP_TOOL` in CLAUDE.md Configuration)
+2. Replace `{{START_DATE}}` and `{{DOMAIN}}` with collected values
+3. Execute via `mcp__snowflake__run_snowflake_query`
 4. For "overview", run all queries sequentially
 
 ## Important Context
