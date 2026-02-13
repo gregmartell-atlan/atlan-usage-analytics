@@ -1,0 +1,110 @@
+// Malloy Semantic Model
+// Auto-generated from SQL DDL
+// Reference model for MDLH_AWS_ATLANVC_CONTEXT_STORE.usage_analytics
+
+source: default {
+
+  table: pages {
+    dimension: context_campaign_name is usage_analytics.pages.context_campaign_name
+    dimension: received_at is usage_analytics.pages.received_at
+    dimension: category is usage_analytics.pages.category
+    dimension: is_visual_query is usage_analytics.pages.is_visual_query
+    dimension: path is usage_analytics.pages.path
+    dimension: referrer is usage_analytics.pages.referrer
+    dimension: context_library_version is usage_analytics.pages.context_library_version
+    dimension: context_page_referrer is usage_analytics.pages.context_page_referrer
+    dimension: context_page_title is usage_analytics.pages.context_page_title
+    dimension: search is usage_analytics.pages.search
+    dimension: title is usage_analytics.pages.title
+    dimension: url is usage_analytics.pages.url
+    dimension: context_campaign_medium is usage_analytics.pages.context_campaign_medium
+    dimension: domain is usage_analytics.pages.domain
+    dimension: original_timestamp is usage_analytics.pages.original_timestamp
+    dimension: timestamp is usage_analytics.pages.timestamp
+    dimension: context_page_search is usage_analytics.pages.context_page_search
+    dimension: context_ip is usage_analytics.pages.context_ip
+    dimension: type is usage_analytics.pages.type
+    dimension: uuid_ts is usage_analytics.pages.uuid_ts
+    dimension: context_campaign_source is usage_analytics.pages.context_campaign_source
+    dimension: context_library_name is usage_analytics.pages.context_library_name
+    dimension: context_page_url is usage_analytics.pages.context_page_url
+    dimension: sent_at is usage_analytics.pages.sent_at
+    dimension: anonymous_id is usage_analytics.pages.anonymous_id
+    dimension: id is usage_analytics.pages.id
+    dimension: context_page_path is usage_analytics.pages.context_page_path
+    dimension: context_user_agent is usage_analytics.pages.context_user_agent
+    dimension: name is usage_analytics.pages.name
+    dimension: tab is usage_analytics.pages.tab
+    dimension: user_id is usage_analytics.pages.user_id
+    dimension: context_locale is usage_analytics.pages.context_locale
+    dimension: context_actions_amplitude_session_id is usage_analytics.pages.context_actions_amplitude_session_id
+    dimension: connector_name is usage_analytics.pages.connector_name
+    dimension: matched_asset_count is usage_analytics.pages.matched_asset_count
+    dimension: type_name is usage_analytics.pages.type_name
+    dimension: asset_guid is usage_analytics.pages.asset_guid
+    dimension: certificate_status is usage_analytics.pages.certificate_status
+    dimension: announcement_title is usage_analytics.pages.announcement_title
+    dimension: announcement_type is usage_analytics.pages.announcement_type
+    dimension: context_protocols_source_id is usage_analytics.pages.context_protocols_source_id
+    dimension: is_custom is usage_analytics.pages.is_custom
+    dimension: context_campaign_content is usage_analytics.pages.context_campaign_content
+    dimension: asset_connector is usage_analytics.pages.asset_connector
+    dimension: asset_type is usage_analytics.pages.asset_type
+    dimension: asset_type_name is usage_analytics.pages.asset_type_name
+    dimension: total_columns is usage_analytics.pages.total_columns
+    dimension: asset_qualified_name is usage_analytics.pages.asset_qualified_name
+    dimension: salesforce_account_id is usage_analytics.pages.salesforce_account_id
+    dimension: email is usage_analytics.pages.email
+    dimension: environment is usage_analytics.pages.environment
+    dimension: username is usage_analytics.pages.username
+    dimension: session_uuid is usage_analytics.pages.session_uuid
+    dimension: date_derived is usage_analytics.pages.date_derived
+
+    measure:
+      event_count is count()
+
+    join_one: users is usage_analytics.users on users.id = user_id
+  }
+
+  table: tracks {
+    dimension: context_page_url is usage_analytics.tracks.context_page_url
+    dimension: id is usage_analytics.tracks.id
+    dimension: received_at is usage_analytics.tracks.received_at
+    dimension: event_text is usage_analytics.tracks.event_text
+    dimension: original_timestamp is usage_analytics.tracks.original_timestamp
+    dimension: timestamp is usage_analytics.tracks.timestamp
+    dimension: user_id is usage_analytics.tracks.user_id
+    dimension: anonymous_id is usage_analytics.tracks.anonymous_id
+    dimension: event is usage_analytics.tracks.event
+    dimension: context_actions_amplitude_session_id is usage_analytics.tracks.context_actions_amplitude_session_id
+    dimension: date_derived is usage_analytics.tracks.date_derived
+
+    measure:
+      event_count is count()
+
+    join_one: users is usage_analytics.users on users.id = user_id
+  }
+
+  table: users {
+    dimension: id is usage_analytics.users.id
+    dimension: email is usage_analytics.users.email
+    dimension: username is usage_analytics.users.username
+    dimension: domain is usage_analytics.users.domain
+    dimension: role is usage_analytics.users.role
+    dimension: license_type is usage_analytics.users.license_type
+    dimension: job_role is usage_analytics.users.job_role
+    dimension: personas is usage_analytics.users.personas
+    dimension: plan is usage_analytics.users.plan
+    dimension: salesforce_account_id is usage_analytics.users.salesforce_account_id
+    dimension: created_at is usage_analytics.users.created_at
+    dimension: tenant_created_at is usage_analytics.users.tenant_created_at
+    dimension: first_name is usage_analytics.users.first_name
+    dimension: last_name is usage_analytics.users.last_name
+    dimension: name is usage_analytics.users.name
+    dimension: display_name is usage_analytics.users.display_name
+
+    measure:
+      user_count is count()
+  }
+
+}

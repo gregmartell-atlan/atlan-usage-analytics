@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Claude Code local state
+.claude/settings.local.json
+
+# Environment / secrets
+.env
+*.key
+credentials.*
