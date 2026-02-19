@@ -6,8 +6,8 @@
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `DATABASE` | `YOUR_DATABASE` | Snowflake database name — run `/setup` to configure |
-| `SCHEMA` | `YOUR_SCHEMA` | Schema containing PAGES, TRACKS, USERS tables — run `/setup` to configure |
+| `DATABASE` | `LANDING` | Snowflake database name |
+| `SCHEMA` | `FRONTEND_PROD` | Schema containing PAGES, TRACKS, USERS tables |
 | `SNOWFLAKE_MCP_TOOL` | `mcp__snowflake__run_snowflake_query` | MCP tool name for query execution |
 
 **Substitution rule**: All SQL files use `{{DATABASE}}.{{SCHEMA}}.TABLE` placeholders. Before executing any query, replace `{{DATABASE}}` and `{{SCHEMA}}` with the values above.
