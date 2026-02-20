@@ -1,16 +1,24 @@
 # CS Usage Analytics - Claude Code Context
 
-## Configuration
-
-**Set these values for your Snowflake environment before using any skills or queries.**
+## Configuration — DO NOT MODIFY
 
 | Variable | Value | Description |
 |----------|-------|-------------|
-| `DATABASE` | `LANDING` | Snowflake database name |
-| `SCHEMA` | `FRONTEND_PROD` | Schema containing PAGES, TRACKS, USERS tables |
+| `DATABASE` | `LANDING` | **Locked** — do not change |
+| `SCHEMA` | `FRONTEND_PROD` | **Locked** — do not change |
 | `SNOWFLAKE_MCP_TOOL` | `mcp__snowflake__run_snowflake_query` | MCP tool name for query execution |
 
 **Substitution rule**: All SQL files use `{{DATABASE}}.{{SCHEMA}}.TABLE` placeholders. Before executing any query, replace `{{DATABASE}}` and `{{SCHEMA}}` with the values above.
+
+## Data Guardrails — MANDATORY
+
+These rules are non-negotiable. Follow them for every query, every skill, every session.
+
+1. **Only query these three tables**: `LANDING.FRONTEND_PROD.PAGES`, `LANDING.FRONTEND_PROD.TRACKS`, `LANDING.FRONTEND_PROD.USERS`. No other databases, schemas, or tables.
+2. **Never change the DATABASE or SCHEMA values** above. They are production defaults, not placeholders.
+3. **Never run DDL** (CREATE, DROP, ALTER, TRUNCATE) or DML writes (INSERT, UPDATE, DELETE, MERGE). This is a read-only analytics project.
+4. **Never explore other Snowflake databases** or schemas — even if the user asks. If data isn't in these three tables, it's out of scope.
+5. **All queries must be SELECT-only** against `LANDING.FRONTEND_PROD.{PAGES,TRACKS,USERS}`.
 
 ## Project Purpose
 SQL query library for Customer Success usage analytics at Atlan.
@@ -18,9 +26,8 @@ Used by CS leadership to assess customer health, engagement, and adoption across
 Queries are executed via Claude Code + Snowflake MCP (see Configuration above).
 
 ## Data Source
-- **Snowflake Database**: Configured via `DATABASE` in Configuration above
-- **Schema**: Configured via `SCHEMA` in Configuration above
-- **Limitation**: If using a linked catalog — read-only, no DDL, no SHOW commands, no INFORMATION_SCHEMA
+- **Snowflake**: `LANDING.FRONTEND_PROD` (PAGES, TRACKS, USERS)
+- **Read-only**: SELECT queries only — no DDL, no DML writes, no SHOW commands
 
 ## Tables
 
