@@ -1,6 +1,6 @@
-# CS Usage Analytics
+# Atlan Usage Analytics
 
-SQL query library and Claude Code skills for Customer Success usage analytics. Works with any Snowflake instance containing Segment usage data (PAGES, TRACKS, USERS tables).
+SQL query library and Claude Code skills for Atlan usage analytics. Works with any Snowflake instance where the Atlan Lakehouse is configured (PAGES, TRACKS, USERS tables).
 
 ## Prerequisites
 
